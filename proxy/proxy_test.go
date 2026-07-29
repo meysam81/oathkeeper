@@ -501,6 +501,24 @@ func TestConfigureBackendURL(t *testing.T) {
 			eURL:  "http://localhost:4000/users/1234",
 			eHost: "localhost:4000",
 		},
+		{
+			r:     &http.Request{Host: "localhost:3000", URL: &url.URL{Path: "/select/vmui/", Scheme: "http"}},
+			rl:    &rule.Rule{Upstream: rule.Upstream{URL: "http://localhost:4000"}},
+			eURL:  "http://localhost:4000/select/vmui/",
+			eHost: "localhost:4000",
+		},
+		{
+			r:     &http.Request{Host: "localhost:3000", URL: &url.URL{Path: "/api/users/", Scheme: "http"}},
+			rl:    &rule.Rule{Upstream: rule.Upstream{URL: "http://localhost:4000/foo/", PreserveHost: true}},
+			eURL:  "http://localhost:4000/foo/api/users/",
+			eHost: "localhost:3000",
+		},
+		{
+			r:     &http.Request{Host: "localhost:3000", URL: &url.URL{Path: "/", Scheme: "http"}},
+			rl:    &rule.Rule{Upstream: rule.Upstream{URL: "http://localhost:4000"}},
+			eURL:  "http://localhost:4000/",
+			eHost: "localhost:4000",
+		},
 	} {
 		t.Run(fmt.Sprintf("case=%d", k), func(t *testing.T) {
 			require.NoError(t, proxy.ConfigureBackendURL(tc.r, tc.rl))

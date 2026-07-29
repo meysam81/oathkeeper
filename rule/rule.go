@@ -7,13 +7,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"path"
 	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/tidwall/gjson"
 
 	"github.com/ory/oathkeeper/driver/configuration"
+	"github.com/ory/oathkeeper/x"
 )
 
 type Match struct {
@@ -226,7 +226,7 @@ func (r *Rule) IsMatching(strategy configuration.MatchingStrategy, method string
 	}
 
 	if u.Path != "" {
-		u.Path = path.Clean(u.Path)
+		u.Path = x.CleanPath(u.Path)
 	}
 	matchAgainst := fmt.Sprintf("%s://%s%s", u.Scheme, u.Host, u.Path)
 	return r.matchingEngine.IsMatching(r.Match.GetURL(), matchAgainst)

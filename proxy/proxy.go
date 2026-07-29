@@ -228,6 +228,9 @@ func ConfigureBackendURL(r *http.Request, rl *rule.Rule) error {
 	forwardURL.Scheme = backendScheme
 	forwardURL.Host = backendHost
 	forwardURL.Path = path.Join(backendPath, proxyPath)
+	if strings.HasSuffix(proxyPath, "/") && !strings.HasSuffix(forwardURL.Path, "/") {
+		forwardURL.Path += "/"
+	}
 
 	if rl.Upstream.StripPath != "" {
 		forwardURL.Path = strings.Replace(forwardURL.Path, "/"+strings.Trim(rl.Upstream.StripPath, "/"), "", 1)

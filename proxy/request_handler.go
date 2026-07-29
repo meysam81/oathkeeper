@@ -6,7 +6,6 @@ package proxy
 import (
 	"encoding/json"
 	"net/http"
-	"path"
 
 	"github.com/pkg/errors"
 
@@ -16,6 +15,7 @@ import (
 	"github.com/ory/oathkeeper/pipeline/authn"
 	pe "github.com/ory/oathkeeper/pipeline/errors"
 	"github.com/ory/oathkeeper/rule"
+	"github.com/ory/oathkeeper/x"
 )
 
 type RequestHandler interface {
@@ -312,7 +312,7 @@ func (h *requestHandler) InitializeAuthnSession(r *http.Request, rl *rule.Rule) 
 	}
 
 	if r.URL.Path != "" {
-		r.URL.Path = path.Clean(r.URL.Path)
+		r.URL.Path = x.CleanPath(r.URL.Path)
 	}
 
 	values, err := rl.ExtractRegexGroups(h.d.Config().AccessRuleMatchingStrategy(), r.URL)

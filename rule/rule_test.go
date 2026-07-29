@@ -178,6 +178,25 @@ func TestRulePathTraversal(t *testing.T) {
 	assert.True(t, matched)
 }
 
+func TestRulePathTraversalPreservesTrailingSlash(t *testing.T) {
+	r := &Rule{
+		Match: &Match{
+			Methods: []string{"POST"},
+			URL:     "https://localhost/admin/<.*>",
+		},
+	}
+
+	u := &url.URL{
+		Scheme: "https",
+		Host:   "localhost",
+		Path:   "/public/../admin/secrets/",
+	}
+	matched, err := r.IsMatching(configuration.Regexp, "POST", u, ProtocolHTTP)
+	require.NoError(t, err)
+	assert.True(t, matched)
+	assert.Equal(t, "/admin/secrets/", u.Path)
+}
+
 func TestRule_UnmarshalJSON(t *testing.T) {
 	var tests = []struct {
 		name     string
